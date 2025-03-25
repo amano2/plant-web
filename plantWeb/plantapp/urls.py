@@ -1,7 +1,11 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
-from . import views
+from .views import upload_image
 
 urlpatterns = [
-    path('', views.upload_page, name='upload_page'),
-    path('upload/', views.upload_file, name='upload_file'),
+    path("", upload_image, name="upload_image"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,46 +8,20 @@
 </head>
 <body>
     <h2>Upload an Image for Disease Detection</h2>
-    <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" id="imageInput" name="image" required>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="image" required>
         <button type="submit">Upload</button>
     </form>
-    
-    <h3 id="result"></h3>
 
-    <script>
-        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
-            event.preventDefault(); 
+    {% if image %}
+        <h3>Disease Percentage: {{ image.disease_percentage }}%</h3>
 
-            let formData = new FormData();
-            let fileInput = document.getElementById("imageInput").files[0];
+        <h3>Original Image</h3>
+        <img src="{{ image.original_image.url }}" alt="Original Image" style="max-width: 300px;">
 
-            if (!fileInput) {
-                alert("Please select a file!");
-                return;
-            }
-
-            formData.append("image", fileInput);
-
-            try {
-                let response = await fetch("http://localhost:8000/upload/", {
-                    method: "POST",
-                    body: formData
-                });
-
-                let data = await response.json();
-                
-                if (response.ok) {
-                    document.getElementById("result").innerText = "Disease Percentage: " + data.disease_percentage + "%";
-                } else {
-                    document.getElementById("result").innerText = "Error: " + data.error;
-                }
-
-            } catch (error) {
-                document.getElementById("result").innerText = "Something went wrong!";
-                console.error(error);
-            }
-        });
-    </script>
+        <h3>Disease Processed Image</h3>
+        <img src="{{ image.processed_image.url }}" alt="Processed Image" style="max-width: 300px;">
+    {% endif %}
 </body>
 </html>
