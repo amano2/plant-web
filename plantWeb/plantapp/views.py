@@ -4,65 +4,77 @@ import numpy as np
 from django.shortcuts import render
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from django.conf import settings
 from .models import PlantImage
 
 def process_image(filepath):
-    """Processes the uploaded image to detect plant disease and generates a processed version."""
+    """ Processes the uploaded plant image to detect diseased areas. """
     
+    # Read the image
     image = cv2.imread(filepath)
     if image is None:
-        return 0.0, None  # Return default values if image loading fails
+        return 0.0, None  # Return 0% if the image is invalid
 
-    # Convert to HSV for better color separation
-    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
+    # Convert to separate RGB channels
+    b, g, r = cv2.split(image)
 
-    # Apply Contrast Limited Adaptive Histogram Equalization (CLAHE)
-    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-    s_eq = clahe.apply(s)
+    # Compute Disease Mask with Contrast Enhancement
+    disease = cv2.subtract(r.astype(np.int16), g.astype(np.int16))
+    disease = np.clip(disease * 5, 0, 255).astype(np.uint8)  # Amplify contrast
 
-    # Edge detection using Canny
-    edges = cv2.Canny(s_eq, 50, 150)
+    # Debugging output
+    print("Disease Mask Min:", np.min(disease), "Max:", np.max(disease))
 
-    # Morphological transformations to refine the mask
-    kernel = np.ones((3, 3), np.uint8)
-    refined_mask = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel)
+    # Apply Otsu's threshold to auto-detect diseased areas
+    _, disease_binary = cv2.threshold(disease, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-    # Calculate disease percentage (example: percentage of non-zero pixels)
-    disease_percentage = (np.count_nonzero(refined_mask) / refined_mask.size) * 100
+    # Compute Alpha Mask (Detect Background)
+    alpha = np.zeros_like(b, dtype=np.uint8)
 
-    # Generate a processed image path
-    processed_filename = f"processed_{os.path.basename(filepath)}"
-    processed_filepath = os.path.join(settings.MEDIA_ROOT, "processed", processed_filename)
+    # Reset Alpha to detect new image background correctly
+    for i in range(image.shape[0]):
+        for j in range(image.shape[1]):
+            if image[i, j, 0] > 200 and image[i, j, 1] > 200 and image[i, j, 2] > 200:
+                alpha[i, j] = 255  # Mark as background
+            else:
+                alpha[i, j] = 0  # Mark as plant area
 
-    # Ensure the processed directory exists
-    os.makedirs(os.path.dirname(processed_filepath), exist_ok=True)
+    # Debug: Check alpha mask values
+    print("Alpha Min:", np.min(alpha), "Max:", np.max(alpha))
 
-    # Save processed image
-    cv2.imwrite(processed_filepath, refined_mask)
+    # Calculate Disease Percentage
+    count_diseased = np.count_nonzero((disease_binary == 255) & (alpha == 0))
+    total_valid_pixels = np.count_nonzero(alpha == 0)
 
-    return disease_percentage, f"processed/{processed_filename}"
+    # Prevent division by zero
+    if total_valid_pixels == 0:
+        return 0.0, None  
+
+    disease_percentage = (count_diseased / total_valid_pixels) * 100
+
+    # Save the processed disease image
+    processed_filepath = filepath.replace(".jpg", "_disease.jpg")
+    cv2.imwrite(processed_filepath, disease_binary)
+
+    return round(disease_percentage, 2), processed_filepath
 
 def upload_image(request):
-    """Handles image upload, processes it, and returns the results."""
+    """ Handles image upload, processes it, and returns the results. """
     
     if request.method == "POST" and request.FILES.get("image"):
         file = request.FILES["image"]
 
-        # Save the original image in the media directory
-        file_name = default_storage.save(f"uploads/{file.name}", ContentFile(file.read()))
-        file_path = os.path.join(settings.MEDIA_ROOT, file_name)
-
-        # Save image reference in the database
-        image_instance = PlantImage(original_image=file_name)
+        # Save image to the database
+        image_instance = PlantImage(original_image=file)
         image_instance.save()
 
-        # Process the image
-        disease_percentage, processed_file_path = process_image(file_path)
+        # Get the image path
+        original_image_path = image_instance.original_image.path
 
-        # Update the database with processed image details
-        image_instance.processed_image = processed_file_path
+        # Process the image
+        disease_percentage, processed_filepath = process_image(original_image_path)
+
+        # Save the processed image path and disease percentage
+        image_instance.processed_image = processed_filepath
         image_instance.disease_percentage = disease_percentage
         image_instance.save()
 
