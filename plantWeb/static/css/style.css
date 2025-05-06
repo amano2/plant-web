@@ -1,0 +1,129 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Body Styling */
+body {
+    background: url('backgd.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    padding: 20px;
+}
+
+
+/* Container */
+.container {
+    background: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 530px;
+    width: 100%;
+    backdrop-filter: blur(10px); /* Apply blur effect to the background */
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Optional border */
+}
+
+/* Heading */
+h2, h3 {
+    color: #28443F;
+    margin-bottom: 15px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-weight:bolder;
+}
+
+/* File Upload Form */
+form {
+    display: inline-block;
+    margin-bottom: 17px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+label.upload-btn {
+    display: inline-block;
+    background: #28443F;
+    color: #F2FD7F;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+label.upload-btn:hover {
+    background: #03692db6;
+}
+
+/* Submit Button */
+button {
+    background: #F2FD7F;
+    color: #28443F;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #b3aa00;
+}
+
+/* Image Styling */
+img {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 5px;
+    margin: 10px 0;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 500px) {
+    .container {
+        max-width: 90%;
+    }
+}
+
+/* Image Container */
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Adds space between images */
+    margin-top: 15px;
+    flex-wrap: nowrap; /* Ensures responsiveness */
+}
+
+/* Image Styling */
+.image-container img {
+    width: 75%;
+    max-width: 300px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .image-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .image-container img {
+        width: 80%;
+    }
+}

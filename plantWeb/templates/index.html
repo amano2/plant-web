@@ -5,23 +5,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant Disease Detection</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h2>Upload an Image for Disease Detection</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="image" required>
-        <button type="submit">Upload</button>
-    </form>
+    <div class="container">
+        <h2>Upload an Image for Disease Detection</h2>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="file-upload" class="upload-btn">Choose File</label>
+            <input id="file-upload" type="file" name="image" required>
+            <button type="submit" style="margin-left: 30px";>Upload</button>
+        </form>
 
-    {% if image %}
-        <h3>Disease Percentage: {{ image.disease_percentage }}%</h3>
+        {% if image %}
+            <h3>Disease Percentage: {{ image.disease_percentage }}%</h3>
 
-        <h3>Original Image</h3>
-        <img src="{{ image.original_image.url }}" alt="Original Image" style="max-width: 300px;">
+            <div class="image-container">
+                <div>
+                    <h3>Original Image</h3>
+                    <img src="{{ image.original_image.url }}" alt="Original Image">
+                </div>
 
-        <h3>Disease Processed Image</h3>
-        <img src="{{ image.processed_image.url }}" alt="Processed Image" style="max-width: 300px;">
-    {% endif %}
+                <div>
+                    <h3>Processed Image</h3>
+                    <img src="{{ image.processed_image.url }}" alt="Processed Image">
+                </div>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>
