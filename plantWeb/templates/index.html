@@ -4,35 +4,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plant Disease Detection</title>
+    <title>PlantGuard - Disease Detection</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h2>Upload an Image for Disease Detection</h2>
+        <header>
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                <h1>PlantGuard</h1>
+            </div>
+            <p class="tagline">Advanced Plant Disease Detection System</p>
+        </header>
         
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label for="file-upload" class="upload-btn">Choose File</label>
-            <input id="file-upload" type="file" name="image" required>
-            <button type="submit" style="margin-left: 30px";>Upload</button>
-        </form>
-
-        {% if image %}
-            <h3>Disease Percentage: {{ image.disease_percentage }}%</h3>
-
-            <div class="image-container">
-                <div>
-                    <h3>Original Image</h3>
-                    <img src="{{ image.original_image.url }}" alt="Original Image">
+        <div class="upload-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-camera"></i> Upload Plant Image</h2>
+                    <p>Upload a clear image of your plant leaf for disease detection</p>
                 </div>
-
-                <div>
-                    <h3>Processed Image</h3>
-                    <img src="{{ image.processed_image.url }}" alt="Processed Image">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="upload-form">
+                        {% csrf_token %}
+                        <div class="file-upload">
+                            <input type="file" name="image" id="image-input" required>
+                            <label for="image-input">
+                                <i class="fas fa-upload"></i>
+                                <span id="file-name">Choose an image...</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-upload">
+                            <i class="fas fa-search"></i> Analyze Plant Health
+                        </button>
+                    </form>
                 </div>
             </div>
+        </div>
+        
+        {% if image %}
+        <div class="results-section">
+            <div class="results-card">
+                <div class="disease-percentage">
+                    <div class="percentage-circle" data-percentage="{{ image.disease_percentage }}">
+                        <div class="percentage-inner">
+                            <span id="percentage-value">{{ image.disease_percentage }}</span>%
+                            <p>Disease Detected</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="image-comparison">
+                    <div class="comparison-item">
+                        <h3><i class="fas fa-image"></i> Original</h3>
+                        <div class="image-container">
+                            <img src="{{ image.original_image.url }}" alt="Original Plant Image" class="result-img">
+                        </div>
+                    </div>
+                    <div class="comparison-item">
+                        <h3><i class="fas fa-microscope"></i> Analysis</h3>
+                        <div class="image-container">
+                            <img src="{{ image.processed_image.url }}" alt="Processed Disease Image" class="result-img">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-secondary" id="new-upload"><i class="fas fa-redo"></i> Analyze Another</button>
+                    <button class="btn-primary" id="download-report"><i class="fas fa-download"></i> Download Report</button>
+                </div>
+            </div>
+        </div>
         {% endif %}
+        
+        <div class="info-section">
+            <div class="info-card">
+                <h3><i class="fas fa-info-circle"></i> How It Works</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-icon"><i class="fas fa-camera"></i></div>
+                        <p>Upload clear image of plant leaf</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon"><i class="fas fa-cogs"></i></div>
+                        <p>AI analyzes for disease patterns</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon"><i class="fas fa-chart-pie"></i></div>
+                        <p>Get detailed disease analysis</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>PlantGuard © 2025 | Protecting plants through technology</p>
+        </footer>
     </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>
