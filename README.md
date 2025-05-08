@@ -10,10 +10,9 @@ A Django-based web application that detects plant diseases from uploaded leaf im
 - Displays disease name, cause, and cure (from JSON)
 - Stores and displays original and processed images
 - Downloadable reports (optional)
-  
+
 ## 🧠 Tech Stack
 
 - **Backend**: Django, TensorFlow, OpenCV, NumPy
-- **Frontend**: HTML, CSS
-- **Model**: Trained Keras model for plant disease classification
-
+- **Frontend**: HTML, CSS, Javascript
+- **Model**: Pre-Trained Keras model "tf.keras.applications.MobileNetV2" (mid-weight cnn) for plant disease classification
