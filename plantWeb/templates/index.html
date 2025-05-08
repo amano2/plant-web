@@ -49,7 +49,6 @@
                     <div class="percentage-circle" data-percentage="{{ image.disease_percentage }}">
                         <div class="percentage-inner">
                             <span id="percentage-value">{{ image.disease_percentage }}</span>%
-                            <p>Disease Detected</p>
                         </div>
                     </div>
                 </div>
@@ -68,7 +67,17 @@
                         </div>
                     </div>
                 </div>
-                
+            
+                {% if image.predicted_label %}
+                        <div style="background: #fff5f5; border: 1px solid #f5c2c7; border-radius: 8px; padding: 10px 12px; margin-top: 5px; white-space: pre-wrap; font-size: 14px; color: #b02a37;">
+                            <strong>Predicted Disease:</strong> {{ image.predicted_label.name }}<br>
+                            {{ image.predicted_label.cause }}<br>
+                            {{ image.predicted_label.cure }}
+                        </div>
+                {% endif %}
+
+
+
                 <div class="action-buttons">
                     <button class="btn-secondary" id="new-upload"><i class="fas fa-redo"></i> Analyze Another</button>
                     <button class="btn-primary" id="download-report"><i class="fas fa-download"></i> Download Report</button>

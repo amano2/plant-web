@@ -136,5 +136,6 @@ CORS_ALLOWED_ORIGINS = [
 
 import os
 
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
