@@ -96,41 +96,94 @@ document.addEventListener('DOMContentLoaded', function() {
         const percentageValue = document.getElementById('percentage-value');
         const percentage = percentageValue ? percentageValue.textContent : "N/A";
         
+        // Get disease information if available
+        let diseaseName = "Unknown";
+        let diseaseCause = "Not available";
+        let diseaseCure = "Not available";
+        
+        // Try to extract disease information from the DOM
+        const diseaseDetailsElement = document.querySelector('.disease-details h4');
+        if (diseaseDetailsElement) {
+            diseaseName = diseaseDetailsElement.textContent.trim();
+        }
+        
+        const diseaseSections = document.querySelectorAll('.disease-section');
+        diseaseSections.forEach(section => {
+            const heading = section.querySelector('h5');
+            const content = section.querySelector('p');
+            
+            if (heading && content) {
+                const headingText = heading.textContent.trim();
+                const contentText = content.textContent.trim();
+                
+                if (headingText.includes('Cause')) {
+                    diseaseCause = contentText;
+                } else if (headingText.includes('Treatment')) {
+                    diseaseCure = contentText;
+                }
+            }
+        });
+        
+        // Format date and time
+        const now = new Date();
+        const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+        const timeOptions = { hour: '2-digit', minute: '2-digit' };
+        const formattedDate = now.toLocaleDateString(undefined, dateOptions);
+        const formattedTime = now.toLocaleTimeString(undefined, timeOptions);
+        
         // Create report content
         const reportContent = 
-            "Plant Disease Analysis Report\n" +
-            "==============================\n" +
-            "Generated on: " + new Date().toLocaleString() + "\n" +
-            "Disease Percentage: " + percentage + "%\n" +
-            "==============================\n" +
-            "Recommendations:\n";
+            "PLANT DISEASE ANALYSIS REPORT\n" +
+            "==============================\n\n" +
+            `Date: ${formattedDate}\n` +
+            `Time: ${formattedTime}\n\n` +
+            "DISEASE INFORMATION\n" +
+            "------------------------------\n" +
+            `Disease Name: ${diseaseName}\n` +
+            `Disease Severity: ${percentage}%\n\n` +
+            "DISEASE DETAILS\n" +
+            "------------------------------\n" +
+            `Cause: ${diseaseCause}\n\n` +
+            `Recommended Treatment: ${diseaseCure}\n\n` +
+            "RECOMMENDATIONS\n" +
+            "------------------------------\n";
         
         // Add recommendations based on severity
         let recommendations = "";
         if (parseInt(percentage) < 30) {
-            recommendations += "- Low level of disease detected. Monitor the plant regularly.\n";
-            recommendations += "- Ensure proper watering and sunlight exposure.\n";
-            recommendations += "- Preventive measures are recommended.";
+            recommendations += "• Low level of disease detected. Monitor the plant regularly.\n";
+            recommendations += "• Ensure proper watering and sunlight exposure.\n";
+            recommendations += "• Consider preventive measures to avoid disease spread.\n";
+            recommendations += "• Inspect other plants in the vicinity for early signs of infection.";
         } else if (parseInt(percentage) < 70) {
-            recommendations += "- Moderate level of disease detected. Take action soon.\n";
-            recommendations += "- Consider applying appropriate fungicide or treatment.\n";
-            recommendations += "- Isolate the plant from healthy ones if possible.\n";
-            recommendations += "- Improve air circulation around the plant.";
+            recommendations += "• Moderate level of disease detected. Take action soon.\n";
+            recommendations += "• Apply appropriate fungicide or treatment as recommended above.\n";
+            recommendations += "• Isolate the plant from healthy ones if possible.\n";
+            recommendations += "• Improve air circulation around the plant.\n";
+            recommendations += "• Remove affected leaves and dispose properly.";
         } else {
-            recommendations += "- High level of disease detected. Immediate action required.\n";
-            recommendations += "- Apply appropriate treatment immediately.\n";
-            recommendations += "- Remove severely affected leaves or parts.\n";
-            recommendations += "- Consider consulting a plant specialist for advanced treatment.";
+            recommendations += "• High level of disease detected. Immediate action required.\n";
+            recommendations += "• Apply appropriate treatment immediately as recommended above.\n";
+            recommendations += "• Remove severely affected leaves or parts.\n";
+            recommendations += "• Consider consulting a plant specialist for advanced treatment.\n";
+            recommendations += "• Take preventive measures for other plants in the vicinity.";
         }
         
+        // Add footer
+        const footer = 
+            "\n\n==============================\n" +
+            "Generated by PlantGuard\n" +
+            "Advanced Plant Disease Detection System\n" +
+            "© 2025 PlantGuard";
+        
         // Create downloadable text file
-        const blob = new Blob([reportContent + recommendations], { type: 'text/plain' });
+        const blob = new Blob([reportContent + recommendations + footer], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         
         // Create download link and trigger click
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'plant_disease_report.txt';
+        a.download = `plant_disease_report_${now.toISOString().split('T')[0]}.txt`;
         document.body.appendChild(a);
         a.click();
         
