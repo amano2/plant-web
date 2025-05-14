@@ -1,4 +1,4 @@
-# 🌿 Plant Disease Detection Web App
+# 🌿 Deep Learning based Plant Disease Detection Web App
 
 A Django-based web application that detects plant diseases from uploaded leaf images using a pre-trained deep learning model.
 
